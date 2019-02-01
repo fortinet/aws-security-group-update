@@ -1,3 +1,4 @@
+'use strict';
 /*
 Author: Fortinet
 The following lambda function will be served as the api gateway.
@@ -16,13 +17,13 @@ exports.handler = function(event, context, callback) {
         requestBody = JSON.parse(event.body),
         src_ip = requestBody.log.srcip || null,
         resp = {
-            'isBase64Encoded' : false,
-            'statusCode': 200,
-            'headers': { "Content-Type": "application/json" },
-            'body': ''
+            isBase64Encoded: false,
+            statusCode: 200,
+            headers: { 'Content-Type': 'application/json' },
+            body: ''
         };
 
-    //look up the instance for src_ip
+    // look up the instance for src_ip
     if (src_ip) {
 
         var filter = {
@@ -32,10 +33,10 @@ exports.handler = function(event, context, callback) {
                     Values: [src_ip]
                 }
             ]
-        }
+        };
 
         ec2.describeInstances(filter, function(err, data) {
-           if (err) {
+            if (err) {
                 code = 400;
                 resp.statusCode = code;
                 resp.body = JSON.stringify({
@@ -44,29 +45,27 @@ exports.handler = function(event, context, callback) {
                     detail: err
                 });
                 callback(null, resp);
-           }
-           else {
+            } else {
 
-               if (data.Reservations.length > 0) {
+                if (data.Reservations.length > 0) {
                     var instanceId = data.Reservations[0].Instances[0].InstanceId;
 
                     var params = {
                         InstanceId: instanceId,
                         Groups: [group]
-                    }
+                    };
 
-                    ec2.modifyInstanceAttribute(params, function(err, data) {
-                        if (err) {
+                    ec2.modifyInstanceAttribute(params, function(error) {
+                        if (error) {
                             code = 400;
                             resp.statusCode = code;
                             resp.body = JSON.stringify({
                                 error: 'fail_to_update_security_group',
                                 security_group_attemped: group,
-                                detail: err
+                                detail: error
                             });
                             callback(null, resp);
-                        }
-                        else {
+                        } else {
                             resp.statusCode = code;
                             resp.body = JSON.stringify({
                                 message: 'security_group_updated',
@@ -75,13 +74,13 @@ exports.handler = function(event, context, callback) {
                             callback(null, resp);
                         }
                     });
-               } else {
+                } else {
                     code = 400;
                     resp.statusCode = code;
                     resp.body = JSON.stringify({error: 'reservation_not_found'});
                     callback(null, resp);
-               }
-           }
+                }
+            }
         });
     } else {
         code = 400;
@@ -90,4 +89,3 @@ exports.handler = function(event, context, callback) {
         callback(null, resp);
     }
 };
-
