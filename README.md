@@ -10,45 +10,41 @@ This AWS Lambda function works with a FortiGate Automation Action and an API gat
   3. Select **Author from scratch** and enter **Basic information** as follows:
      * **Function name:** Enter a function name of your choosing.
      * **Runtime:** Select **Node.js 8.10**.
-     * **Permissions:** Select an existing role, or create a new one. The function will need basic **AWS Lambda Execution** as well as EC2 **Describe** and **Modify**. The JSON below can be used to create policies with these permissions.
-
-     **AWSLambdaBasicExecutionRole:**
-      ```
+     * **Permissions:** Select an existing role, or create a new one. The function will need basic **AWS Lambda Execution** as well as EC2 **Describe** and **Modify**. The JSON below can be used to create policies with these permissions.<br>
+   **AWSLambdaBasicExecutionRole.json:**
+     ```
       {
-        "Version": "2012-10-17",
-        "Statement": [
-            {
-                "Effect": "Allow",
-                "Action": [
-                    "logs:CreateLogGroup",
-                    "logs:CreateLogStream",
-                    "logs:PutLogEvents"
-                ],
-                "Resource": "*"
-            }
-        ]
-      }
-      ```
-
+          "Version": "2012-10-17",
+          "Statement": [
+              {
+                  "Effect": "Allow",
+                  "Action": [
+                      "logs:CreateLogGroup",
+                      "logs:CreateLogStream",
+                      "logs:PutLogEvents"
+                  ],
+                  "Resource": "*"
+              }
+          ]
+      }   
+     ```   
      **EC2 Describe and Modify JSON:**
-
       ```
-      {
-        "Version": "2012-10-17",
-        "Statement": [
-            {
-                "Sid": "VisualEditor0",
-                "Effect": "Allow",
-                "Action": [
-                    "ec2:DescribeInstances",
-                    "ec2:ModifyInstanceAttribute"
-                ],
-                "Resource": "*"
-            }
-        ]
-      }
+        {
+          "Version": "2012-10-17",
+          "Statement": [
+              {
+                  "Sid": "VisualEditor0",
+                  "Effect": "Allow",
+                  "Action": [
+                      "ec2:DescribeInstances",
+                      "ec2:ModifyInstanceAttribute"
+                  ],
+                  "Resource": "*"
+              }
+          ]
+        }
       ```
-
   4. Click **Create function** to create the function.
   5. Under **Function code**, copy the provided `index.js` code into the AWS Lambda function.
   6. Under **Environment variables** add the following key-value pair:
